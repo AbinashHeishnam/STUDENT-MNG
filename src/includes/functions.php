@@ -80,6 +80,21 @@ function deleteStudent($conn, $id) {
     }
 }
 
+function deleteMultipleStudents($conn, $ids) {
+    try {
+        $ids = array_map('intval', $ids);
+        $idList = implode(',', $ids);
+        
+        $sql = "DELETE FROM students WHERE id IN ($idList)";
+        $result = $conn->query($sql);
+        
+        return ['success' => $result, 'message' => $result ? 'Students deleted successfully' : $conn->error];
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        return ['success' => false, 'message' => $e->getMessage()];
+    }
+}
+
 function editStudent($conn, $data) {
     try {
         $id = intval($data['id']);

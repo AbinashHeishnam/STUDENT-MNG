@@ -110,15 +110,22 @@ $students = getAllStudents($conn);
 
         <section id="student-list" class="card">
             <h2>Student List</h2>
-            <!-- Add search functionality -->
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search students..." onkeyup="searchStudents()">
+            <div class="action-bar">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search students..." onkeyup="searchStudents()">
+                </div>
+                <form method="POST" id="bulkDeleteForm" class="bulk-actions">
+                    <button type="submit" name="bulk_delete" class="btn-danger" onclick="return confirmBulkDelete()">
+                        Delete Selected
+                    </button>
+                </form>
             </div>
             
             <div class="table-responsive">
-                                <table>
+                <table>
                     <thead>
                         <tr>
+                            <th><input type="checkbox" id="selectAll" onclick="toggleAllCheckboxes()"></th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
@@ -131,6 +138,10 @@ $students = getAllStudents($conn);
                         <?php if (count($students) > 0): ?>
                             <?php foreach ($students as $student): ?>
                             <tr>
+                                <td>
+                                    <input type="checkbox" name="student_ids[]" form="bulkDeleteForm" 
+                                           value="<?php echo $student['id']; ?>" class="student-checkbox">
+                                </td>
                                 <td><?php echo htmlspecialchars($student['name']); ?></td>
                                 <td><?php echo htmlspecialchars($student['email']); ?></td>
                                 <td><?php echo htmlspecialchars($student['phone']); ?></td>
@@ -226,7 +237,24 @@ $students = getAllStudents($conn);
                 const newTheme = currentTheme === 'dark-theme' ? 'light-theme' : 'dark-theme';
                 setTheme(newTheme);
             });
-});
+        });
+
+        function toggleAllCheckboxes() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.getElementsByClassName('student-checkbox');
+            for (let checkbox of checkboxes) {
+                checkbox.checked = selectAll.checked;
+            }
+        }
+
+        function confirmBulkDelete() {
+            const selectedCount = document.querySelectorAll('.student-checkbox:checked').length;
+            if (selectedCount === 0) {
+                alert('Please select students to delete');
+                return false;
+            }
+            return confirm(`Are you sure you want to delete ${selectedCount} selected students?`);
+        }
     </script>
 </body>
 </html>

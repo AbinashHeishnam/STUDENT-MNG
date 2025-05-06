@@ -22,7 +22,7 @@ A web-based student management system built with PHP, MySQL, and modern CSS. Fea
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/student_management_project.git
+git clone https://github.com/AbinashHeishnam/student_management_project.git
 cd student_management_project
 ```
 
@@ -113,7 +113,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Authors
 
-- Your Name - *Initial work*
+- Your Name - **Abinash Heishnam**
 
 ## Acknowledgments
 
