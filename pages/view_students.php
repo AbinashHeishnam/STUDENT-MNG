@@ -2,6 +2,8 @@
 require_once '../src/config/database.php';
 require_once '../src/includes/functions.php';
 
+$students = getAllStudents($conn);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
     $id = $_POST['student_id'];
     $success = deleteStudent($conn, $id);
@@ -10,8 +12,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
         exit;
     }
 }
-
-$students = getAllStudents($conn);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,23 +36,10 @@ $students = getAllStudents($conn);
 
         <main class="app-main">
             <div class="view-container">
-                <div class="table-actions">
-                    <div class="search-box">
-                        <i class="material-icons search-icon">search</i>
-                        <input type="text" id="searchInput" 
-                               class="search-input" 
-                               placeholder="Search by name, email or course..."
-                               oninput="filterStudents(this.value)">
-                    </div>
-                </div>
-
                 <div class="students-list">
                     <?php if (!empty($students)): ?>
                         <?php foreach ($students as $student): ?>
-                            <div class="student-row" 
-                                 data-searchable="<?php echo strtolower(htmlspecialchars($student['name'] ?? '') . ' ' . 
-                                                                   htmlspecialchars($student['email'] ?? '') . ' ' . 
-                                                                   htmlspecialchars($student['course'] ?? '')); ?>">
+                            <div class="student-row">
                                 <div class="student-info">
                                     <div class="student-avatar">
                                         <i class="material-icons">person</i>
@@ -77,7 +64,7 @@ $students = getAllStudents($conn);
                         <?php endforeach; ?>
                     <?php else: ?>
                         <div class="no-records">
-                            <span class="material-icons">sentiment_dissatisfied</span>
+                            <i class="material-icons">search_off</i>
                             <p>No students found</p>
                         </div>
                     <?php endif; ?>
@@ -85,17 +72,5 @@ $students = getAllStudents($conn);
             </div>
         </main>
     </div>
-
-    <script>
-        function filterStudents(query) {
-            query = query.toLowerCase();
-            const rows = document.querySelectorAll('.student-row');
-            
-            rows.forEach(row => {
-                const searchText = row.getAttribute('data-searchable');
-                row.style.display = searchText.includes(query) ? '' : 'none';
-            });
-        }
-    </script>
 </body>
 </html>

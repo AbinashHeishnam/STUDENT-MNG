@@ -159,4 +159,41 @@ function getStudentById($conn, $id) {
         return null;
     }
 }
+
+function searchStudents($conn, $search = '') {
+    try {
+        if (empty($search)) {
+            return getAllStudents($conn);
+        }
+
+        $search = "%{$search}%";
+        $stmt = $conn->prepare(
+            "SELECT * FROM students 
+             WHERE name LIKE ? 
+             OR email LIKE ? 
+             OR course LIKE ? 
+             ORDER BY created_at DESC"
+        );
+        
+        if (!$stmt) {
+            throw new Exception($conn->error);
+        }
+        
+        $stmt->bind_param("sss", $search, $search, $search);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $students = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            $students[] = $row;
+        }
+        
+        return $students;
+        
+    } catch (Exception $e) {
+        error_log("Search error: " . $e->getMessage());
+        return [];
+    }
+}
 ?>
