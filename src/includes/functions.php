@@ -35,9 +35,7 @@ function addStudent($conn, $data) {
         // Prepare variables for binding
         $name = trim($data['name']);
         $email = trim($data['email']);
-        $phone = trim($data['phone']);
         $course = trim($data['course']);
-        $address = trim($data['address']);
 
         // Check for email uniqueness
         $checkEmail = $conn->prepare("SELECT id FROM students WHERE email = ?");
@@ -48,13 +46,13 @@ function addStudent($conn, $data) {
         }
 
         // Add new student
-        $stmt = $conn->prepare("INSERT INTO students (name, email, phone, course, address) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO students (name, email, course) VALUES (?, ?, ?)");
         if (!$stmt) {
             throw new Exception($conn->error);
         }
         
-        // Bind parameters properly
-        $stmt->bind_param("sssss", $name, $email, $phone, $course, $address);
+        // Bind parameters
+        $stmt->bind_param("sss", $name, $email, $course);
         
         $result = $stmt->execute();
         $stmt->close();
@@ -67,15 +65,30 @@ function addStudent($conn, $data) {
 
 function deleteStudent($conn, $id) {
     try {
+        $id = intval($id);
+        
+        // Validate ID
+        if ($id <= 0) {
+            throw new Exception("Invalid student ID");
+        }
+        
         $stmt = $conn->prepare("DELETE FROM students WHERE id = ?");
         if (!$stmt) {
             throw new Exception($conn->error);
         }
         
         $stmt->bind_param("i", $id);
-        return $stmt->execute();
+        $result = $stmt->execute();
+        
+        if (!$result) {
+            throw new Exception("Failed to delete student");
+        }
+        
+        $stmt->close();
+        return true;
+        
     } catch (Exception $e) {
-        echo "Error: " . $e->getMessage();
+        error_log("Delete error: " . $e->getMessage());
         return false;
     }
 }

@@ -2,11 +2,18 @@ DirectoryIndex index.php
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
+    RewriteBase /student_management_project/
+    
+    # If the request is not for a real file or directory
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule . /index.php [L]
+    
+    # Rewrite to index.php
+    RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
 
 # Prevent directory listing
 Options -Indexes
+
+# Set default character set
+AddDefaultCharset UTF-8
